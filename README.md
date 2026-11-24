@@ -17,6 +17,7 @@
 - [Authentication & Roles](#authentication--roles)
 - [Getting Started & Local Setup](#getting-started--local-setup)
 - [Default Seed Data & Admin Credentials](#default-seed-data--admin-credentials)
+- [Deployment Guide](#deployment-guide)
 - [License](#license)
 
 ---
@@ -383,6 +384,23 @@ When the backend starts up against an empty or freshly migrated SQL Server datab
 - **Role:** `Admin`
 - **Full Name:** Eleanor Vance (Chief Editor)
 - **Username:** `eleanor-vance`
+
+---
+
+## Deployment Guide
+
+The World Ledger is cloud-ready and supports multiple deployment architectures:
+
+1. **Decoupled Cloud (Recommended - Free Tier Available):**
+   - **Frontend**: [Vercel](https://vercel.com) or [Netlify](https://netlify.com)
+   - **Backend**: [Render](https://render.com), [Railway](https://railway.app), or [Fly.io](https://fly.io)
+   - **Database**: Cloud PostgreSQL on [Neon](https://neon.tech) or [Supabase](https://supabase.com)
+2. **Containerized (Docker Compose):**
+   - Full orchestration using `docker compose up -d --build` (Postgres, .NET API, Nginx frontend).
+3. **Unified Single-Container Service:**
+   - Pre-built React static assets in `backend/WorldLedger.API/wwwroot` served directly by ASP.NET Core on port 5000.
+
+📖 For complete step-by-step instructions and environment variable settings, see **[DEPLOYMENT.md](DEPLOYMENT.md)**.
 
 ---
 
