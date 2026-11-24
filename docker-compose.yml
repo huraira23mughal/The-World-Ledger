@@ -1,0 +1,72 @@
+version: "3.9"
+
+services:
+  # ─── PostgreSQL 16 ──────────────────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: twl-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: worldledger
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d worldledger"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── ASP.NET Core 8 API ─────────────────────────────────────────────────────
+  api:
+    build:
+      context: ./backend/WorldLedger.API
+      dockerfile: Dockerfile
+    container_name: twl-api
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: "http://+:5000"
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=worldledger;Username=postgres;Password=postgres123"
+      Jwt__Secret: "WorldLedger_SuperSecret_JWT_Key_2026_MustBe32CharsOrMore!"
+      Jwt__Issuer: "WorldLedger.API"
+      Jwt__Audience: "WorldLedger.Frontend"
+      Cors__AllowedOrigins__0: "http://localhost:3000"
+      Cors__AllowedOrigins__1: "http://frontend:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5000/api/categories || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  # ─── Next.js 16 Frontend ────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: "http://api:5000/api"
+    container_name: twl-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: "http://localhost:5000/api"
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+    driver: local
+

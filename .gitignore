@@ -1,0 +1,29 @@
+﻿# Environment
+.env
+.env.local
+.env.production
+
+# Node / Vite
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+.next/
+frontend/.next/
+
+# .NET
+backend/WorldLedger.API/bin/
+backend/WorldLedger.API/obj/
+.vs/
+
+# Docker volumes
+pgdata/
+
+# IDE
+.vscode/
+.idea/
+*.user
+
+# OS
+.DS_Store
+Thumbs.db
